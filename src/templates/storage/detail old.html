@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+<div class="flex flex-col md:flex-row">
+
+    <div class="w-full md:w-3/4 space-y-4 space-x-10">
+        {% comment %} main content {% endcomment %}
+        
+
+        <h2 class="text-4xl font-extrabold dark:text-white space-4">{{object.title}}</h2>
+        <p class="my-4 text-lg text-gray-500">{{object.description}}</p>
+        
+        
+
+
+    </div>
+
+
+
+    <div class="w-full md:w-1/4">
+            {% comment %} sidebar {% endcomment %}
+            {% if is_owner %}
+            <p> You are admin </p>
+            {% else %}
+            <div>
+                <button type="button" href="{{ object.get_add_to_cart_url }}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Add this boot from cart</button>
+            </div>
+            {% comment %} <div>
+                <button type="button" href="{{ object.get_remove_from_cart_url }}" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Remove this boot from cart</button>
+            </div> {% endcomment %}
+            {% endif %}
+
+            {% if object.cover %}
+                <div class="grid gap-4 br-4">
+                    <div>
+                        <img class="h-auto max-w-full rounded-lg" src=" {{ object.cover.url }}" alt="">
+                    </div>
+                    
+                </div>
+            {% endif %}    
+            
+        {% if form %}
+        <h3>Update Title</h3>
+        <br>
+        <form method="POST" action="." enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-submit">Submit</button>
+
+        </form> 
+
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

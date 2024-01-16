@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+<form method="POST" action=".">
+    {% csrf_token %}
+    {{ form1.as_p }}
+    <button type="submit" class="btn-submit">Search</button>
+    <br>
+    <br>
+    <br>
+    <p> BOOKS META: </p>
+    <br>
+    
+    {{ form.as_p }}
+
+    <button type="submit" class="btn-submit">Submit</button>
+
+</form> 
+
+{% endblock %}
