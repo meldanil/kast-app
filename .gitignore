@@ -1,3 +1,4 @@
 node_modules
 venv/
 src/cfehome/settings.py
+.DS_Store
