@@ -17,5 +17,7 @@ testfixtures
 toml
 stripe
 django_countries
-django-allauth
 django-crispy-forms
+django-tables2
+django-jquery
+django-bootstrap5

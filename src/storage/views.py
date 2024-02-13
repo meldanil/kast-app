@@ -7,6 +7,9 @@ from django.shortcuts import redirect
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
+from datetime import datetime
+
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 import random
 import string
@@ -16,9 +19,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 
-from .models import Title, TitleFile, Category, Level, Order, OrderItem, Address
+
+from .models import Title, TitleFile, Category, Level, Order, OrderItem, Address, Placebook, Place
 from .forms import TitleForm, CheckoutForm
 import isbnlib
 
@@ -41,7 +47,7 @@ def title_create_view(request):
     return render(request, 'storage/create.html', context)
 
 def title_list_view(request):
-    object_list = Title.products.all()
+    object_list = Placebook.objects.all()
     paginate_by = 6
     return render(request, "storage/list.html", {"products": object_list})
 
@@ -105,6 +111,36 @@ def title_attachment_download_view(request, isbn=None, pk=None):
 
 def basket_summary(request):
     return render(request, 'storage/summary.html')
+
+def finalise(request):
+    items = OrderItem.objects.filter(user=request.user)
+    for i in items:
+        places = Placebook.objects.filter(title=i.item).order_by("place", "copies_num")
+        for p in places:
+            p.take_from_place(i.quantity)
+        
+    order = get_object_or_404(Order, user=request.user, ordered=False)
+    order.is_ordered()
+    return render(request, 'storage/thankyou.html')
+
+
+
+def main_table_view(request):
+    object_list = Placebook.objects.all()
+    return render(request, "storage/main_table.html", {"products": object_list})
+
+def check_amount(request):
+    object_list = Placebook.objects.all()
+    books = Placebook.objects.filter(title__ignore_amount=False)
+    flag=False
+    for b in books:
+        if b.title.get_amount() <= 5:
+            messages.warning(request, f"We need more '{b.title.title}' ISBN:{b.title.isbn}. We have only {b.title.get_amount()} copies")
+            flag = True
+    if not flag:
+        messages.warning(request, f"EVERITHING IS OKAY!")
+    return render(request, "storage/main_table.html", {"products": object_list})
+
 
 
 class OrderSummaryView(LoginRequiredMixin, View):
@@ -348,3 +384,56 @@ class CheckoutView(View):
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
             return redirect("storage:order-summary")
+        
+
+def signup(request):
+    if request.method == 'POST':
+        full_name = request.POST['name'].split()
+        first_name = full_name[0]
+        if len(full_name) == 1:
+            last_name = ''
+        if len(full_name) == 2:
+            last_name = full_name[1]
+        if len(full_name) > 2:
+            last_name = full_name[1:]
+            last_name = ' '.join(last_name)
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+
+        if password == confirm_password:
+            if User.objects.filter(username=username).exists():
+                # Add an information message to the current request
+                messages.info(request, 'Username already exists')
+
+                # Redirect the user to the 'home' page
+                return redirect('home')
+            elif User.objects.filter(email=email).exists():
+                # Add an information message to the current request
+                messages.info(request, 'Email already exists')
+
+                # Redirect the user to the 'home' page
+                return redirect('home')
+            else:
+                # Create a new User object with the provided data
+                user = User.objects.create_user(
+                    username=username, password=password, email=email)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.save()
+
+                # Add a success message to the current request
+                messages.success(request, 'User created successfully')
+
+                # Redirect the user to the 'home' page
+                return redirect('')
+
+        else:
+            # Add an information message to the current request
+            messages.info(request, 'Password not matching')
+            return redirect('')
+
+    # Return an HTTP response with the message "Page not found" if the request method is not 'POST'
+    return render(request, 'portfolio/404_error.html')
+

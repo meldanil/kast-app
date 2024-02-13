@@ -68,6 +68,9 @@ class Title(models.Model):
     level_id = models.ForeignKey(Level, on_delete=models.CASCADE, null=True)
     products = ProductManager()
     objects = models.Manager()
+    books_per_box = models.IntegerField(blank=True, null=True)
+    ignore_amount = models.BooleanField(default=False)
+    
     # handle = models.SlugField(unique=True) #slug
 
     def save(self, *args, **kwargs):
@@ -76,7 +79,7 @@ class Title(models.Model):
     def get_absolute_url(self):
         return f"/storage/{self.isbn}/"
     
-
+    
     class Meta:
         verbose_name_plural = 'Titles'
 
@@ -86,11 +89,11 @@ class Title(models.Model):
     def handle_book_attachment_upload(instance, filename):
         return f"storage/{instance.title.isbn}/attachments/{filename}"
     
-    def get_copy(self):
-        copy_dict = Placebook.objects.filter(title=self.id).values('copy')
+    def get_amount(self):
+        places = Placebook.objects.filter(title=self.id)
         amount = 0
-        for item in copy_dict:
-            amount += item['copy']
+        for p in places:
+            amount += p.copies_num
         return amount
     
     def get_add_to_cart_url(self):
@@ -126,10 +129,11 @@ class Place(models.Model):
 
 
 class Placebook(models.Model):
-    title = models.ForeignKey('Title', on_delete=models.CASCADE)
-    place = models.ForeignKey("Place", on_delete=models.CASCADE)
-    copies_num = models.IntegerField()
+    title = models.ForeignKey(Title, on_delete=models.CASCADE)
+    place = models.ForeignKey(Place, on_delete=models.CASCADE)
+    copies_num = models.IntegerField(null=True, blank=False)
     handle = models.SlugField(unique=True) #slug
+    added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name_plural = 'Placebooks'
@@ -137,8 +141,12 @@ class Placebook(models.Model):
     def __str__(self):
         return str(self.id)
 
-    # def __str__(self):
-    #     return self.name
+    def take_from_place(self, amount):
+        self.copies_num -= amount
+        self.save()
+
+
+
 
 class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -150,6 +158,7 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.quantity} of {self.item.title}"
     
+
 
     
     
@@ -176,6 +185,10 @@ class Order(models.Model):
         for item in self.items.all():
             amount += item.quantity
         return amount
+    
+    def is_ordered(self):
+        self.ordered = True
+        self.save()
     
 
 

@@ -16,4 +16,7 @@ urlpatterns = [
     path('remove-from-cart/<isbn>/', views.remove_from_cart, name='remove-from-cart'),
     path('remove-item-from-cart/<isbn>/', views.remove_single_item_from_cart, name='remove-single-item-from-cart'),
     path('checkout', views.CheckoutView.as_view(), name='checkout'),
+    path('thankyou', views.finalise, name='thank'),
+    path('main_table', views.main_table_view, name='main_table'),
+    path('check', views.check_amount, name='check')
 ]

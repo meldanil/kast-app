@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    {% load django_bootstrap5 %}
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     {% include 'base/css.html' %}
+    
     
     <title>{% block head_title %}BoekenKAST{% endblock head_title %}</title>
 
@@ -27,16 +29,16 @@
                 </div>
                 {% endfor %}
             {% endif %}
-            </div>
+        </div>
         
 
-        {% block content %}
-        {% endblock content %}
-    </div>
+            {% block content %}
+            {% endblock content %}
+        </div>
 
     {% include 'base/footer.html' %}
     {% include 'base/js.html' %}
-    <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
+    {% comment %} <script src="../path/to/flowbite/dist/flowbite.min.js"></script> {% endcomment %}
 </body>
 
 </html>
