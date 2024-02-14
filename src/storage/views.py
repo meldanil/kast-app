@@ -47,7 +47,7 @@ def title_create_view(request):
     return render(request, 'storage/create.html', context)
 
 def title_list_view(request):
-    object_list = Placebook.objects.all()
+    object_list = Placebook.objects.all().order_by('-copies_num')
     paginate_by = 6
     return render(request, "storage/list.html", {"products": object_list})
 

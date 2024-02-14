@@ -137,6 +137,7 @@ class Placebook(models.Model):
 
     class Meta:
         verbose_name_plural = 'Placebooks'
+        unique_together = (('title', 'place'),)
 
     def __str__(self):
         return str(self.id)
@@ -144,6 +145,7 @@ class Placebook(models.Model):
     def take_from_place(self, amount):
         self.copies_num -= amount
         self.save()
+
 
 
 
