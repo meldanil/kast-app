@@ -4,13 +4,17 @@
 
 {% block content %}
 
-<div class="flex flex-col md:flex-row">
+<div class="justify-center md:w-3/4 flex space-x-20 flex-col md:flex-row justify-center ">
 
-    <div class="w-full md:w-3/4 space-y-4 space-x-10">
+    <div class="justify-center space-y-4 space-x-10">
         {% comment %} main content {% endcomment %}
         
 
+        
+        
         <h2 class="text-4xl font-extrabold dark:text-white space-4">{{object.title}}</h2>
+            
+        
         <p class="my-4 text-lg text-gray-500">{{object.description}}</p>
         
         
@@ -20,17 +24,17 @@
 
 
 
-    <div class="w-full md:w-1/4">
+    <div class="w-1/2 md:w-1/4 justify-center">
             {% comment %} sidebar {% endcomment %}
             {% if is_owner %}
             <p> You are admin </p>
             {% else %}
 
-            {% if object.cover %}
+            {% if object.cover_url %}
                 <div class="grid gap-4 br-4">
                     <div>
-                        <img class="h-auto max-w-full rounded-lg" src=" {{ object.cover.url }}" alt="">
-                    </div>
+                        <img class="h-10 max-w-full rounded-lg p-30" src=" {{ object.cover_url }}" alt="">
+                    </div> 
                     
                 </div>
             {% endif %} 

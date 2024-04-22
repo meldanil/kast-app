@@ -1,8 +1,9 @@
-node_modules
 venv/
-src/cfehome/settings.py
+node_modules
+node_modules1
+src/apphome/settings.py
 .DS_Store
 remote.ipynb
-src/storage/__pycache__/models.cpython-311.pyc
-src/storage/__pycache__/views.cpython-311.pyc
-src/storage/migrations/__pycache__/0019_alter_placebook_unique_together.cpython-311.pyc
+src/storage/__pycache__/
+src/storage/migrations/
+src/apphome/__pycache__

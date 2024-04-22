@@ -6,6 +6,8 @@ from django.urls import reverse
 
 from django_countries.fields import CountryField
 
+from isbnlib import cover
+
 PROTECTED_MEDIA_ROOT = settings.PROTECTED_MEDIA_ROOT
 protected_storage = FileSystemStorage(location=str(PROTECTED_MEDIA_ROOT))
 
@@ -57,7 +59,8 @@ class Title(models.Model):
     year = models.IntegerField(blank=True, null=True)
     origin = models.CharField(max_length=250, blank=True, null=True)
     language = models.CharField(max_length=250, blank=True, null=True)
-    cover = models.ImageField(upload_to='storage/', blank=True, null=True, default='storage/book_default.jpg')
+    cover = models.ImageField(upload_to='storage/', blank=True, null=True, default='storage/book_default.jpg', max_length=255)
+    cover_url = models.ImageField(blank=True, null=True, default='', max_length=255)
     description = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True, null=True)
@@ -105,6 +108,10 @@ class Title(models.Model):
         return reverse("storage:remove-from-cart", kwargs={
             'isbn': self.isbn
         })
+    
+    def set_cover(self):
+        self.cover = cover(self.isbn)['thumbnail']
+        
     
 
 class TitleFile(models.Model):
