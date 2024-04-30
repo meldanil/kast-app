@@ -15,11 +15,12 @@
         <table class="table col-4 table-sm table-hover p-3 cell-border compact stripe" id="store_book">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
-                    <th style="width: 10%">#</th>
+                    <th style="width: 10%">Title ID</th>
                     <th >ISBN</th>
                     <th >Title</th>
                     <th >Author</th>
                     <th >Place</th>
+                    <th >Language</th>
                     <th >Amount</th>
                 </tr>
             </thead>
@@ -27,11 +28,12 @@
             {% for p in products %}
             
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <td>{{ p.title.id }}</td>
                 <td>{{ p.title.isbn }}</td>
                 <td>{{ p.title.title| truncatechars:25 }}</td>
                 <td>{{ p.title.author}}</td>
                 <td>{{ p.place}}</td>
+                <td>{{ p.title.language}}</td>
                 <td>{{ p.copies_num }}</td>
             </tr>
             {% endfor %}
@@ -62,7 +64,7 @@
 
                 // Set the filtering columns
                 api
-                    .columns([0, 1, 2, 3, 4, 5]) // <--- OR VISIBLE??
+                    .columns([0, 1, 2, 3, 4, 5, 6]) // <--- OR VISIBLE??
                     .eq(0)
                     .each(function(colIdx) {
                         var cell = $('.filters th').eq(
