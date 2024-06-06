@@ -126,7 +126,7 @@ def finalise(request):
 
 
 def main_table_view(request):
-    object_list = Placebook.objects.all()
+    object_list = Placebook.objects.all()[:50]
     return render(request, "storage/main_table.html", {"products": object_list})
 
 def check_amount(request):
