@@ -4,41 +4,44 @@
 
 {% block content %}
 {% load django_bootstrap5 %}
-{% comment %} Datatable CDN {% endcomment %}
 
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/v/bs5/jq-3.6.0/jszip-2.5.0/dt-1.13.4/b-2.3.6/b-colvis-2.3.6/b-html5-2.3.6/b-print-2.3.6/datatables.min.js"></script>
+<div class='container'>
+    <div class='row'>
+        <div class='col-0'> 
+        </div>
+        <div class='col-12'>
+            <div class="" id="store_book_wrapper">
+                <table class="table" id="store_book">
+                    <thead class="text-xs text-gray-700 bg-gray-50">
+                        <tr>
+                            <th class="w-10">Title ID</th>
+                            <th >ISBN</th>
+                            <th >Title</th>
+                            <th >Author</th>
+                            <th >Place</th>
+                            <th >Language</th>
+                            <th >Amount</th>
+                        </tr>
+                    </thead>
+                    <!--Data from backend -->
+                    {% for p in products %}
+                    
+                    <tr>
+                        <td>{{ p.title.id }}</td>
+                        <td>{{ p.title.isbn }}</td>
+                        <td>{{ p.title.title| truncatechars:25 }}</td>
+                        <td>{{ p.title.author}}</td>
+                        <td>{{ p.place}}</td>
+                        <td>{{ p.title.language}}</td>
+                        <td>{{ p.copies_num }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>   
+        </div>
+    </div>
+</div>
 
-<div class="w-auto" id="store_book_wrapper">
-        <table class="table col-4 table-sm table-hover p-3 cell-border compact stripe" id="store_book">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                <tr>
-                    <th class="w-10">Title ID</th>
-                    <th >ISBN</th>
-                    <th >Title</th>
-                    <th >Author</th>
-                    <th >Place</th>
-                    <th >Language</th>
-                    <th >Amount</th>
-                </tr>
-            </thead>
-            <!--Data from backend -->
-            {% for p in products %}
-            
-            <tr>
-                <td>{{ p.title.id }}</td>
-                <td>{{ p.title.isbn }}</td>
-                <td>{{ p.title.title| truncatechars:25 }}</td>
-                <td>{{ p.title.author}}</td>
-                <td>{{ p.place}}</td>
-                <td>{{ p.title.language}}</td>
-                <td>{{ p.copies_num }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-</div>  
 
 <script>
     $(document).ready(function() {
@@ -50,14 +53,40 @@
 
         var table = $('#store_book').DataTable( {
             //Datatable configurations
-            paging: true,
-            ordering: true,
-            pageLength: 10,
-            lengthChange: true,
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [ 10, 25, 50, 100 ]
+                    }
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        numbers: 3
+                    }
+                },
+            },
+            scrollY: '500px',
+            scrollX: '1200px',
+            scrollCollapse: true,
+            paging: false,
+
+            //ordering: true,
+            //pageLength: 10,
+            //lengthChange: true,
             autoWidth: false,
-            searching: true,
-            bInfo: true,
-            bSort: true,
+            columnDefs: [
+                {  
+                    targets: [0, 6],
+                    width: '200px'}],
+            //searching: true,
+            //info: false,
+            
+            // deferRender: false,
             
             initComplete: function() {
                 var api = this.api();
@@ -106,85 +135,85 @@
             
             
             
-            dom: 'lBfrtip',
+            //dom: 'lBfrtip',
             buttons: [ 
 
-                //{ // Columns
-                //extend: 'colvis',
-                //text: 'Choose columns',
-                //className: 'btn btn-secondary',
-                //titleAttr: 'Columns',
-                //},
+                        //{ // Columns
+                        //extend: 'colvis',
+                        //text: 'Choose columns',
+                        //className: 'btn btn-secondary',
+                        //titleAttr: 'Columns',
+                        //},
 
-                { // COPY
-                extend: 'copy',
-                text: 'COPY',
-                className: 'btn btn-secondary',
-                titleAttr: 'Copy',
-                // which column
-                exportOptions: {
-                columns: ':visible'
-                }
-                }, 
+                        { // COPY
+                        extend: 'copy',
+                        text: 'COPY',
+                        className: 'btn btn-secondary',
+                        titleAttr: 'Copy',
+                        // which column
+                        exportOptions: {
+                        columns: ':visible'
+                        }
+                        }, 
 
-                { // EXCEL
-                extend: 'excel',
-                text: 'EXCEL',
-                className: 'btn btn-secondary',
-                titleAttr: 'Excel',
-                exportOptions: {
-                columns: ':visible'
-                }
-                },
+                        { // EXCEL
+                        extend: 'excel',
+                        text: 'EXCEL',
+                        className: 'btn btn-secondary',
+                        titleAttr: 'Excel',
+                        exportOptions: {
+                        columns: ':visible'
+                        }
+                        },
 
-                { // PRINT
-                extend: 'print',
-                text: 'PRINT',
-                className: 'btn btn-secondary',
-                titleAttr: 'Print',
-                exportOptions: {
-                columns: ':visible'
-                },
-                // customize fontsize when print
-                customize: function ( win ) {
-                    $(win.document.body).css('font-size', '10px')
-                    $(win.document.body).find('table')
-                        .addClass('compact')
-                        .css('font-size', 'inherit');
-                }
-                },
+                        { // PRINT
+                        extend: 'print',
+                        text: 'PRINT',
+                        className: 'btn btn-secondary',
+                        titleAttr: 'Print',
+                        exportOptions: {
+                        columns: ':visible'
+                        },
+                        // customize fontsize when print
+                        customize: function ( win ) {
+                            $(win.document.body).css('font-size', '10px')
+                            $(win.document.body).find('table')
+                                .addClass('compact')
+                                .css('font-size', 'inherit');
+                        }
+                        },
 
-                { // PDF
-                extend: 'pdf',
-                text: 'PDF',
-                className: 'btn btn-secondary',
-                titleAttr: 'PDF',
-                exportOptions: {
-                columns: ':visible'
-                },
-                // center the table
-                tableHeader: {
-                    alignment: 'center'
-                },
-                //Font size and optimization
-                customize: function ( doc ) {
-                    doc.styles.tableHeader.alignment = 'center'; // Header position
-                    doc.styles.tableBodyOdd.alignment = 'center'; // Body position 1 (grey color)
-                    doc.styles.tableBodyEven.alignment = 'center'; // Body position 2 (white color)
-                    doc.styles.tableHeader.fontSize = 11; // Header font size
-                    doc.defaultStyle.fontSize = 10; // Body font size
-                    // to get 100% width of the table
-                    doc.content[1].table.widths = Array(doc.content[1].table.body[1].length + 1).join('*').split('');
-                }
-                } // <-- end PDF 
-            ] // <-- end BUTTONS
+                        { // PDF
+                        extend: 'pdf',
+                        text: 'PDF',
+                        className: 'btn btn-secondary',
+                        titleAttr: 'PDF',
+                        exportOptions: {
+                        columns: ':visible'
+                        },
+                        // center the table
+                        tableHeader: {
+                            alignment: 'center'
+                        },
+                        //Font size and optimization
+                        customize: function ( doc ) {
+                            doc.styles.tableHeader.alignment = 'center'; // Header position
+                            doc.styles.tableBodyOdd.alignment = 'center'; // Body position 1 (grey color)
+                            doc.styles.tableBodyEven.alignment = 'center'; // Body position 2 (white color)
+                            doc.styles.tableHeader.fontSize = 11; // Header font size
+                            doc.defaultStyle.fontSize = 10; // Body font size
+                            // to get 100% width of the table
+                            doc.content[1].table.widths = Array(doc.content[1].table.body[1].length + 1).join('*').split('');
+                        }
+                        } // <-- end PDF 
+                    ],// <-- end BUTTONS
+
         } );
 
         table.buttons().container()
-        .appendTo( '#store_book_wrapper .col-md-6:eq(0)' );
+        .appendTo( '#store_book_wrapper' );
     } );
 </script>
-
 
 
 {% endblock %}
