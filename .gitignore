@@ -1,5 +1,5 @@
 node_modules
-venv/
+/.venv
 src/cfehome/settings.py
 .DS_Store
 remote.ipynb
